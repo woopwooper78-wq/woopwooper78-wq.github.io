@@ -3,29 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>Modern Chat Application</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1>Chat Application</h1>
-            <nav>
-                <button id="logout">Logout</button>
-            </nav>
-        </header>
-        <main>
-            <div id="chat-box"></div>
-            <div id="message-input">
-                <input type="text" id="message" placeholder="Type a message...">
-                <input type="file" id="image-upload">
-                <button id="send">Send</button>
-            </div>
-        </main>
-        <footer>
-            <div id="emoji-picker"></div>
-        </footer>
+    <div id="login">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Enter your username" />
+        <button id="loginBtn">Login</button>
     </div>
-    <script src="script.js"></script>
+
+    <div id="chat" style="display:none;">
+        <h2>Chat Room</h2>
+        <div id="messages"></div>
+        <input type="text" id="message" placeholder="Type a message..." />
+        <button id="sendBtn">Send</button>
+        <div id="emoji-picker"></div>
+        <input type="file" id="imageUpload" accept="image/*" />
+    </div>
+
+    <script>
+        const socket = io('http://your_server_address');
+        let username;
+
+        $('#loginBtn').click(function() {
+            username = $('#username').val();
+            if(username) {
+                $('#login').hide();
+                $('#chat').show();
+                socket.emit('userLogin', username);
+            }
+        });
+
+        $('#sendBtn').click(function() {
+            const message = $('#message').val();
+            socket.emit('sendMessage', { user: username, message: message });
+            $('#message').val('');
+        });
+
+        socket.on('receiveMessage', function(data) {
+            $('#messages').append('<p>' + data.user + ': ' + data.message + '</p>');
+        });
+
+        $('#imageUpload').change(function() {
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                socket.emit('sendImage', { user: username, image: e.target.result });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        socket.on('receiveImage', function(data) {
+            $('#messages').append('<img src="' + data.image + '" alt="Image from ' + data.user + '" width="100">');
+        });
+    </script>
 </body>
 </html>
