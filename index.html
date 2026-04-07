@@ -3,91 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Application</title>
+    <title>AI Chatbot</title>
     <style>
         body {
-            background: linear-gradient(to right, #1c1c1c, #3a3a3a);
-            color: #ffffff;
             font-family: Arial, sans-serif;
+            line-height: 1.6;
             margin: 0;
             padding: 0;
-            overflow: hidden;
-        }
-        #chat {
-            padding: 20px;
-            height: 100vh;
             display: flex;
             flex-direction: column;
+            height: 100vh;
         }
-        .message {
-            margin: 10px 0;
-            transition: all 0.3s ease;
+        #chatbox {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin: 20px;
+            border-radius: 5px;
+        }
+        #input-area {
+            display: flex;
+            margin: 10px 20px;
         }
         #input {
+            flex: 1;
             padding: 10px;
+        }
+        #send {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
-            margin-top: auto;
-            transition: background 0.3s;
+            cursor: pointer;
         }
-        #input:focus {
-            background: #444;
+        #send:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div id="chat">
-        <div id="messages"></div>
-        <input id="input" type="text" placeholder="Type a message..." />
+    <div id="chatbox">
+        <p>Welcome to the AI Chatbot!</p>
+        <p>Type your message below and hit 'Send'.</p>
+    </div>
+    <div id="input-area">
+        <input type="text" id="input" placeholder="Type your message here...">
+        <button id="send">Send</button>
     </div>
     <script>
-        const input = document.getElementById('input');
-        const messages = document.getElementById('messages');
-        const responses = {
-            "hello": "Hi there! How can I help you today?",
-            // Add 50+ keyword responses here
-        };
+        const sendButton = document.getElementById('send');
+        const inputField = document.getElementById('input');
+        const chatbox = document.getElementById('chatbox');
 
-        input.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const message = input.value;
-                if (message) {
-                    addMessage('You: ' + message);
-                    respond(message);
-                    input.value = '';
-                }
+        sendButton.onclick = function() {
+            const userMessage = inputField.value;
+            chatbox.innerHTML += `<p>User: ${userMessage}</p>`;
+            inputField.value = '';
+            // Call AI processing here
+        };
+    </script>
+    <script>
+        function adminAccess() {
+            const password = prompt('Enter the admin password:');
+            if (password === 'yourpassword') { 
+                // Open admin panel
+                alert('Admin panel is now open.');
+                // Implement admin functionality
+            } else {
+                alert('Incorrect password!');
             }
-        });
-
-        function addMessage(message) {
-            const msgElement = document.createElement('div');
-            msgElement.className = 'message';
-            msgElement.textContent = message;
-            messages.appendChild(msgElement);
-            messages.scrollTop = messages.scrollHeight;  // Scroll to the bottom
         }
-
-        function respond(message) {
-            const response = responses[message.toLowerCase()] || "I'm not sure how to respond to that.";
-            setTimeout(() => addMessage('AI: ' + response), 500);
-        }
-
-        // Load persisted messages from localStorage
-        function loadMessages() {
-            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-            storedMessages.forEach(msg => addMessage(msg));
-        }
-
-        // Persist messages to localStorage
-        const oldAddMessage = addMessage;
-        addMessage = function(message) {
-            oldAddMessage(message);
-            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-            storedMessages.push(message);
-            localStorage.setItem('chatMessages', JSON.stringify(storedMessages));
-        };
-
-        loadMessages();
     </script>
 </body>
 </html>
