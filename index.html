@@ -1,158 +1,555 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chattie 2 - Chat Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@custom-variant dark (&:is(.dark *));
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #36393f;
+            color: #dcddde;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
-  --color-sidebar: hsl(var(--sidebar));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
-}
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
 
-/* LIGHT MODE - Default theme with placeholder values */
-:root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
-  --opaque-button-border-intensity: -8;
+        /* Servers Sidebar */
+        .servers-sidebar {
+            width: 72px;
+            background: #202225;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            border-right: 1px solid #1a1b1e;
+            overflow-y: auto;
+        }
 
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+        .server-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #2c2f33;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+            color: #b9bbbe;
+        }
 
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --sidebar: 0 0% 98%;
-  --sidebar-foreground: 240 5.3% 26.1%;
-  --sidebar-primary: 240 5.9% 10%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 240 4.8% 95.9%;
-  --sidebar-accent-foreground: 240 5.9% 10%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 240 5.9% 10%;
+        .server-btn:hover {
+            background: #5865f2;
+            border-radius: 30%;
+            color: white;
+        }
 
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
-  --radius: .5rem;
-  --spacing: 0.25rem;
-}
+        .server-btn.active {
+            background: #5865f2;
+            border-radius: 30%;
+            color: white;
+        }
 
-/* DARK MODE */
-.dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
+        /* Channels Sidebar */
+        .channels-sidebar {
+            width: 240px;
+            background: #2c2f33;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #1a1b1e;
+        }
 
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+        .channel-header {
+            padding: 16px;
+            border-bottom: 1px solid #1a1b1e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-  --sidebar: 240 5.9% 10%;
-  --sidebar-foreground: 240 4.8% 95.9%;
-  --sidebar-primary: 224.3 76.3% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 3.7% 15.9%;
-  --sidebar-accent-foreground: 240 4.8% 95.9%;
-  --sidebar-border: 240 3.7% 15.9%;
-  --sidebar-ring: 240 4.9% 83.9%;
-}
+        .channel-header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply font-sans antialiased bg-background text-foreground;
-  }
-}
+        .channel-header-btn {
+            background: none;
+            border: none;
+            color: #72767d;
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.2s;
+        }
 
-@layer utilities {
-  /* Hide ugly search cancel button in Chrome */
-  input[type="search"]::-webkit-search-cancel-button {
-    @apply hidden;
-  }
+        .channel-header-btn:hover {
+            color: #b9bbbe;
+        }
 
-  /* Placeholder styling for contentEditable div */
-  [contenteditable][data-placeholder]:empty::before {
-    content: attr(data-placeholder);
-    color: hsl(var(--muted-foreground));
-    pointer-events: none;
-  }
-}
+        .channels-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .channel-item {
+            padding: 8px 16px;
+            margin: 4px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #72767d;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .channel-item:hover {
+            background: #3c3f45;
+            color: #ffffff;
+        }
+
+        .channel-item.active {
+            background: #5865f2;
+            color: #ffffff;
+        }
+
+        .channel-icon {
+            font-size: 16px;
+        }
+
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #36393f;
+        }
+
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid #202225;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #36393f;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chat-header-topic {
+            font-size: 13px;
+            color: #72767d;
+        }
+
+        .chat-header-icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .chat-header-icon {
+            cursor: pointer;
+            color: #b9bbbe;
+            font-size: 20px;
+            transition: color 0.2s;
+        }
+
+        .chat-header-icon:hover {
+            color: #ffffff;
+        }
+
+        /* Messages Area */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #5865f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+            color: white;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-author {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #72767d;
+            margin-left: 8px;
+        }
+
+        .message-text {
+            font-size: 15px;
+            color: #dcddde;
+            word-wrap: break-word;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 16px;
+            background: #36393f;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            background: #40444b;
+            border-radius: 8px;
+            padding: 12px;
+            align-items: flex-end;
+        }
+
+        .input-icon {
+            color: #b9bbbe;
+            cursor: pointer;
+            font-size: 20px;
+            transition: color 0.2s;
+        }
+
+        .input-icon:hover {
+            color: #ffffff;
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #dcddde;
+            resize: none;
+            outline: none;
+            max-height: 100px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .message-input::placeholder {
+            color: #72767d;
+        }
+
+        /* Members Sidebar */
+        .members-sidebar {
+            width: 240px;
+            background: #2c2f33;
+            border-left: 1px solid #1a1b1e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .members-header {
+            padding: 16px;
+            border-bottom: 1px solid #1a1b1e;
+            font-size: 14px;
+            font-weight: 600;
+            color: #72767d;
+        }
+
+        .members-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .member-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .member-item:hover {
+            background: #3c3f45;
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #5865f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .member-name {
+            font-size: 14px;
+            color: #dcddde;
+        }
+
+        .member-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #43b581;
+            margin-left: auto;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #202225;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2c2f33;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Servers Sidebar -->
+        <div class="servers-sidebar">
+            <div class="server-btn active">C</div>
+            <div class="server-btn">F</div>
+            <div class="server-btn">D</div>
+            <div class="server-btn">G</div>
+        </div>
+
+        <!-- Channels Sidebar -->
+        <div class="channels-sidebar">
+            <div class="channel-header">
+                <div class="channel-header-title">Chattie 2</div>
+                <button class="channel-header-btn">▼</button>
+            </div>
+            <div class="channels-list">
+                <div class="channel-item active">
+                    <span class="channel-icon">#</span>
+                    <span>general</span>
+                </div>
+                <div class="channel-item">
+                    <span class="channel-icon">#</span>
+                    <span>random</span>
+                </div>
+                <div class="channel-item">
+                    <span class="channel-icon">#</span>
+                    <span>announcements</span>
+                </div>
+                <div class="channel-item">
+                    <span class="channel-icon">🔊</span>
+                    <span>voice</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <span class="chat-header-icon">#</span>
+                    <div>
+                        <div class="chat-header-title">general</div>
+                        <div class="chat-header-topic">Welcome to Chattie 2</div>
+                    </div>
+                </div>
+                <div class="chat-header-icons">
+                    <span class="chat-header-icon">📞</span>
+                    <span class="chat-header-icon">📹</span>
+                    <span class="chat-header-icon">⚙️</span>
+                </div>
+            </div>
+
+            <div class="messages-area" id="messagesArea">
+                <div class="message">
+                    <div class="message-avatar">C</div>
+                    <div class="message-content">
+                        <div>
+                            <span class="message-author">Chattie Bot</span>
+                            <span class="message-time">Today at 12:00 PM</span>
+                        </div>
+                        <div class="message-text">Welcome to Chattie 2! 🎉 This is a Discord-like chat application.</div>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message-avatar">U</div>
+                    <div class="message-content">
+                        <div>
+                            <span class="message-author">User</span>
+                            <span class="message-time">Today at 12:05 PM</span>
+                        </div>
+                        <div class="message-text">Thanks! This looks amazing 😊</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <span class="input-icon">➕</span>
+                    <input type="text" class="message-input" id="messageInput" placeholder="Message #general">
+                    <span class="input-icon">😊</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Members Sidebar -->
+        <div class="members-sidebar">
+            <div class="members-header">MEMBERS — 4</div>
+            <div class="members-list">
+                <div class="member-item">
+                    <div class="member-avatar">C</div>
+                    <div class="member-name">Chattie Bot</div>
+                    <div class="member-status"></div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">U</div>
+                    <div class="member-name">You</div>
+                    <div class="member-status"></div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">A</div>
+                    <div class="member-name">Admin</div>
+                    <div class="member-status"></div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">M</div>
+                    <div class="member-name">Moderator</div>
+                    <div class="member-status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const messagesArea = document.getElementById('messagesArea');
+
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const messageText = messageInput.value.trim();
+                if (messageText) {
+                    addMessage('You', 'U', messageText);
+                    messageInput.value = '';
+                }
+            }
+        });
+
+        function addMessage(author, avatar, text) {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div>
+                        <span class="message-author">${author}</span>
+                        <span class="message-time">Today at ${time}</span>
+                    </div>
+                    <div class="message-text">${escapeHtml(text)}</div>
+                </div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Interactive channel switching
+        document.querySelectorAll('.channel-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.channel-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                const channelName = this.textContent.trim();
+                document.querySelector('.chat-header-title').textContent = channelName;
+                messageInput.placeholder = `Message #${channelName}`;
+            });
+        });
+
+        // Interactive server switching
+        document.querySelectorAll('.server-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
