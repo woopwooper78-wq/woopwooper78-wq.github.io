@@ -6,75 +6,113 @@
     <title>AI Chatbot</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+            height: 100vh;
             margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            background: linear-gradient(180deg, #1f1f1f, #2c2c2c);
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
         }
-        #chatbox {
+        #header {
+            padding: 10px;
+            text-align: center;
+            background: #333;
+        }
+        #chat {
             flex: 1;
+            padding: 10px;
             overflow-y: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            margin: 20px;
-            border-radius: 5px;
         }
-        #input-area {
+        .user {
+            color: blue;
+            margin: 5px 0;
+        }
+        .ai {
+            color: green;
+            margin: 5px 0;
+        }
+        #inputArea {
             display: flex;
-            margin: 10px 20px;
+            padding: 10px;
+            background: #444;
         }
         #input {
             flex: 1;
             padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
         }
-        #send {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+        #adminButton {
+            background: #777;
+            padding: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        #send:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 <body>
-    <div id="chatbox">
-        <p>Welcome to the AI Chatbot!</p>
-        <p>Type your message below and hit 'Send'.</p>
+    <div id="header">AI Chatbot</div>
+    <div id="chat"></div>
+    <div id="inputArea">
+        <input type="text" id="input" placeholder="Type a message..." />
+        <button id="adminButton">Admin</button>
     </div>
-    <div id="input-area">
-        <input type="text" id="input" placeholder="Type your message here...">
-        <button id="send">Send</button>
-    </div>
-    <script>
-        const sendButton = document.getElementById('send');
-        const inputField = document.getElementById('input');
-        const chatbox = document.getElementById('chatbox');
 
-        sendButton.onclick = function() {
-            const userMessage = inputField.value;
-            chatbox.innerHTML += `<p>User: ${userMessage}</p>`;
-            inputField.value = '';
-            // Call AI processing here
-        };
-    </script>
     <script>
-        function adminAccess() {
-            const password = prompt('Enter the admin password:');
-            if (password === 'yourpassword') { 
-                // Open admin panel
-                alert('Admin panel is now open.');
-                // Implement admin functionality
-            } else {
-                alert('Incorrect password!');
-            }
+        const chat = document.getElementById('chat');
+        const input = document.getElementById('input');
+        const adminButton = document.getElementById('adminButton');
+
+        // Load messages and training data from localStorage
+        let messages = JSON.parse(localStorage.getItem('messages')) || [];
+        let trainingData = JSON.parse(localStorage.getItem('trainingData')) || {};
+
+        // Function to render messages
+        function renderMessages() {
+            chat.innerHTML = '';
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = msg.type;
+                messageDiv.textContent = msg.text;
+                chat.appendChild(messageDiv);
+            });
+            chat.scrollTop = chat.scrollHeight;
         }
+
+        // Add message on Enter key press
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const userMessage = input.value;
+                messages.push({ text: userMessage, type: 'user' });
+                input.value = '';
+                renderMessages();
+                // Simulated AI response
+                setTimeout(() => {
+                    const aiResponse = 'AI: ' + userMessage;  // Replace with actual AI logic
+                    messages.push({ text: aiResponse, type: 'ai' });
+                    renderMessages();
+                }, 500);
+                // Save to localStorage
+                localStorage.setItem('messages', JSON.stringify(messages));
+            }
+        });
+
+        // Admin button functionality
+        adminButton.addEventListener('click', function() {
+            const keyword = prompt('Enter keyword:');
+            const response = prompt('Enter response:');
+            if (keyword && response) {
+                trainingData[keyword] = response;
+                localStorage.setItem('trainingData', JSON.stringify(trainingData));
+            }
+        });
+
+        // Initial render
+        renderMessages();
     </script>
 </body>
 </html>
