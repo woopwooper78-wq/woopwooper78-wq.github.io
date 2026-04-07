@@ -3,62 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Chat Application</title>
+    <title>Chattie - Modern Chat Application</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        /* Add your gradient background and dark theme styles here */
+        body {
+            background: linear-gradient(90deg, #4b6cb7, #182848);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            /* Define your chat container styles */
+        }
+        /* Additional styles */
+    </style>
 </head>
 <body>
-    <div id="login">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Enter your username" />
-        <button id="loginBtn">Login</button>
+    <div class="chat-app">
+        <header>
+            <h1>Chattie</h1>
+            <div class="login-register">
+                <form id="login-form">
+                    <input type="text" placeholder="Username" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <form id="register-form">
+                    <input type="text" placeholder="Username" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </header>
+        <div class="chat-area">
+            <div class="messages">
+                <!-- Messages will appear here -->
+            </div>
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button">Send</button>
+            <button id="emoji-button">😊</button>
+            <input type="file" id="image-upload" />
+            <div class="unread-indicator">
+                <!-- Unread message badges will be shown here -->
+            </div>
+        </div>
+        <footer>
+            <div id="status-indicators">
+                <span class="status online">Online</span>
+            </div>
+        </footer>
     </div>
-
-    <div id="chat" style="display:none;">
-        <h2>Chat Room</h2>
-        <div id="messages"></div>
-        <input type="text" id="message" placeholder="Type a message..." />
-        <button id="sendBtn">Send</button>
-        <div id="emoji-picker"></div>
-        <input type="file" id="imageUpload" accept="image/*" />
-    </div>
-
     <script>
-        const socket = io('http://your_server_address');
-        let username;
-
-        $('#loginBtn').click(function() {
-            username = $('#username').val();
-            if(username) {
-                $('#login').hide();
-                $('#chat').show();
-                socket.emit('userLogin', username);
-            }
-        });
-
-        $('#sendBtn').click(function() {
-            const message = $('#message').val();
-            socket.emit('sendMessage', { user: username, message: message });
-            $('#message').val('');
-        });
-
-        socket.on('receiveMessage', function(data) {
-            $('#messages').append('<p>' + data.user + ': ' + data.message + '</p>');
-        });
-
-        $('#imageUpload').change(function() {
-            const file = this.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                socket.emit('sendImage', { user: username, image: e.target.result });
-            };
-            reader.readAsDataURL(file);
-        });
-
-        socket.on('receiveImage', function(data) {
-            $('#messages').append('<img src="' + data.image + '" alt="Image from ' + data.user + '" width="100">');
-        });
+        // JavaScript for handling messaging, localStorage, emoji picker, image uploads, and Chattie Bot logic
     </script>
 </body>
 </html>
