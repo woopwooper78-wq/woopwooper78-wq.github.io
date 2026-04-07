@@ -5,52 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat Application</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
-        #message { width: 80%; }
-        #login { display: none; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { width: 80%; margin: auto; overflow: hidden; }
+        #chat { border: 1px solid #ccc; height: 400px; overflow-y: scroll; padding: 10px; background: #fff; }
+        #userInput { width: 75%; }
+        .message { margin: 10px 0; }
+        .user { color: blue; }
+        .ai { color: green; }
+        #stats { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div id="chat"></div>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="loginButton">Login</button>
-    <div id="login">
-        <input type="text" id="message" placeholder="Type your message..." />
+    <div class="container">
+        <h1>AI Chat Application</h1>
+        <div id="chat"></div>
+        <input type="text" id="userInput" placeholder="Type a message..." />
         <button id="sendButton">Send</button>
+        <div id="stats"></div>
     </div>
 
     <script>
-        let user = null;
-        let messages = [];
+        const chatContainer = document.getElementById('chat');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const statsContainer = document.getElementById('stats');
+        let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
 
-        document.getElementById('loginButton').onclick = function() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            // Here you can implement the actual authentication logic
-            if (username && password) {
-                user = username;
-                document.getElementById('login').style.display = 'block';
-                displayMessage(`Welcome, ${user}!`);
-            }
-        };
-
-        document.getElementById('sendButton').onclick = function() {
-            const messageContent = document.getElementById('message').value;
-            if (messageContent && user) {
-                messages.push({ user: user, message: messageContent });
-                displayMessage(`${user}: ${messageContent}`);
-                document.getElementById('message').value = '';
-                // Implement learning logic here
-            }
-        };
-
-        function displayMessage(msg) {
-            const chat = document.getElementById('chat');
-            chat.innerHTML += `<div>${msg}</div>`;
-            chat.scrollTop = chat.scrollHeight;
+        function renderChat() {
+            chatContainer.innerHTML = '';
+            messages.forEach((msg, index) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(msg.sender);
+                messageDiv.innerText = msg.text;
+                chatContainer.appendChild(messageDiv);
+            });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
+
+        function saveMessages() {
+            localStorage.setItem('chatMessages', JSON.stringify(messages));
+        }
+
+        function generateAIResponse(userMessage) {
+            // Simple keyword-based AI response simulation. 
+            const responsePatterns = {
+                greeting: 'Hello! How can I assist you today?',
+                bye: 'Goodbye! Have a great day!',
+                default: 'I am here to help you!'
+            };
+
+            if (userMessage.includes('hello')) {
+                return responsePatterns.greeting;
+            } else if (userMessage.includes('bye')) {
+                return responsePatterns.bye;
+            }
+            return responsePatterns.default;
+        }
+
+        function addMessage(sender, text) {
+            messages.push({ sender, text });
+            saveMessages();
+            renderChat();
+        }
+
+        sendButton.onclick = function() {
+            const userText = userInput.value;
+            if (userText) {
+                addMessage('user', userText);
+                const aiResponse = generateAIResponse(userText);
+                addMessage('ai', aiResponse);
+                userInput.value = '';
+            }
+        };
+
+        // Initial render
+        renderChat();
     </script>
 </body>
 </html>
