@@ -3,84 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Application</title>
+    <title>Chat Application</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { width: 80%; margin: auto; overflow: hidden; }
-        #chat { border: 1px solid #ccc; height: 400px; overflow-y: scroll; padding: 10px; background: #fff; }
-        #userInput { width: 75%; }
-        .message { margin: 10px 0; }
-        .user { color: blue; }
-        .ai { color: green; }
-        #stats { margin-top: 20px; }
+        body {
+            background: linear-gradient(to right, #1c1c1c, #3a3a3a);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #chat {
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        #input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-top: auto;
+            transition: background 0.3s;
+        }
+        #input:focus {
+            background: #444;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>AI Chat Application</h1>
-        <div id="chat"></div>
-        <input type="text" id="userInput" placeholder="Type a message..." />
-        <button id="sendButton">Send</button>
-        <div id="stats"></div>
+    <div id="chat">
+        <div id="messages"></div>
+        <input id="input" type="text" placeholder="Type a message..." />
     </div>
-
     <script>
-        const chatContainer = document.getElementById('chat');
-        const userInput = document.getElementById('userInput');
-        const sendButton = document.getElementById('sendButton');
-        const statsContainer = document.getElementById('stats');
-        let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-
-        function renderChat() {
-            chatContainer.innerHTML = '';
-            messages.forEach((msg, index) => {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message');
-                messageDiv.classList.add(msg.sender);
-                messageDiv.innerText = msg.text;
-                chatContainer.appendChild(messageDiv);
-            });
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function saveMessages() {
-            localStorage.setItem('chatMessages', JSON.stringify(messages));
-        }
-
-        function generateAIResponse(userMessage) {
-            // Simple keyword-based AI response simulation. 
-            const responsePatterns = {
-                greeting: 'Hello! How can I assist you today?',
-                bye: 'Goodbye! Have a great day!',
-                default: 'I am here to help you!'
-            };
-
-            if (userMessage.includes('hello')) {
-                return responsePatterns.greeting;
-            } else if (userMessage.includes('bye')) {
-                return responsePatterns.bye;
-            }
-            return responsePatterns.default;
-        }
-
-        function addMessage(sender, text) {
-            messages.push({ sender, text });
-            saveMessages();
-            renderChat();
-        }
-
-        sendButton.onclick = function() {
-            const userText = userInput.value;
-            if (userText) {
-                addMessage('user', userText);
-                const aiResponse = generateAIResponse(userText);
-                addMessage('ai', aiResponse);
-                userInput.value = '';
-            }
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const responses = {
+            "hello": "Hi there! How can I help you today?",
+            // Add 50+ keyword responses here
         };
 
-        // Initial render
-        renderChat();
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const message = input.value;
+                if (message) {
+                    addMessage('You: ' + message);
+                    respond(message);
+                    input.value = '';
+                }
+            }
+        });
+
+        function addMessage(message) {
+            const msgElement = document.createElement('div');
+            msgElement.className = 'message';
+            msgElement.textContent = message;
+            messages.appendChild(msgElement);
+            messages.scrollTop = messages.scrollHeight;  // Scroll to the bottom
+        }
+
+        function respond(message) {
+            const response = responses[message.toLowerCase()] || "I'm not sure how to respond to that.";
+            setTimeout(() => addMessage('AI: ' + response), 500);
+        }
+
+        // Load persisted messages from localStorage
+        function loadMessages() {
+            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+            storedMessages.forEach(msg => addMessage(msg));
+        }
+
+        // Persist messages to localStorage
+        const oldAddMessage = addMessage;
+        addMessage = function(message) {
+            oldAddMessage(message);
+            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+            storedMessages.push(message);
+            localStorage.setItem('chatMessages', JSON.stringify(storedMessages));
+        };
+
+        loadMessages();
     </script>
 </body>
 </html>
