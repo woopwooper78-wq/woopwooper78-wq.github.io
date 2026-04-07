@@ -3,121 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chattie 2 Chat Application</title>
+    <title>AI Chat Application</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #282c34, #3a3f47);
-            color: white;
-            margin: 0;
-            padding: 20px;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        #message-list {
-            list-style-type: none;
-            padding: 0;
-            height: 400px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            border: 1px solid #444;
-            border-radius: 5px;
-        }
-        .message {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-        .online {
-            background: #4caf50;
-        }
-        .offline {
-            background: #f44336;
-        }
-        input, button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin: 5px 0;
-        }
-        #emoji-picker {
-            display: flex;
-            flex-wrap: wrap;
-            cursor: pointer;
-        }
-        .emoji {
-            font-size: 24px;
-            padding: 5px;
-        }
+        body { font-family: Arial, sans-serif; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        #message { width: 80%; }
+        #login { display: none; }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h1>Chattie 2</h1>
-        <ul id="message-list"></ul>
-        <input type="text" id="message-input" placeholder="Type a message..." />
-        <button id="send-button">Send</button>
-        <div id="emoji-picker">
-            <span class="emoji">😀</span>
-            <span class="emoji">😁</span>
-            <span class="emoji">😅</span>
-            <span class="emoji">😂</span>
-            <span class="emoji">😍</span>
-            <span class="emoji">😎</span>
-            <span class="emoji">😢</span>
-            <span class="emoji">😡</span>
-            <span class="emoji">🤣</span>
-            <span class="emoji">😜</span>
-            <span class="emoji">😏</span>
-            <span class="emoji">🙌</span>
-            <span class="emoji">🎉</span>
-            <span class="emoji">💔</span>
-            <span class="emoji">🔥</span>
-            <span class="emoji">💯</span>
-            <span class="emoji">✨</span>
-        </div>
+    <div id="chat"></div>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginButton">Login</button>
+    <div id="login">
+        <input type="text" id="message" placeholder="Type your message..." />
+        <button id="sendButton">Send</button>
     </div>
+
     <script>
-        const messageList = document.getElementById('message-list');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const emojiPicker = document.getElementById('emoji-picker');
+        let user = null;
+        let messages = [];
 
-        sendButton.onclick = () => {
-            const messageText = messageInput.value;
-            if (messageText) {
-                const messageElement = document.createElement('li');
-                messageElement.className = 'message';
-                messageElement.textContent = messageText;
-                messageList.appendChild(messageElement);
-                messageInput.value = '';
-                localStorage.setItem(Date.now(), messageText);
+        document.getElementById('loginButton').onclick = function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // Here you can implement the actual authentication logic
+            if (username && password) {
+                user = username;
+                document.getElementById('login').style.display = 'block';
+                displayMessage(`Welcome, ${user}!`);
             }
         };
 
-        emojiPicker.onclick = (event) => {
-            if (event.target.classList.contains('emoji')) {
-                messageInput.value += event.target.textContent;
+        document.getElementById('sendButton').onclick = function() {
+            const messageContent = document.getElementById('message').value;
+            if (messageContent && user) {
+                messages.push({ user: user, message: messageContent });
+                displayMessage(`${user}: ${messageContent}`);
+                document.getElementById('message').value = '';
+                // Implement learning logic here
             }
         };
 
-        window.onload = () => {
-            for(let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                const value = localStorage.getItem(key);
-                const messageElement = document.createElement('li');
-                messageElement.className = 'message';
-                messageElement.textContent = value;
-                messageList.appendChild(messageElement);
-            }
-        };
+        function displayMessage(msg) {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<div>${msg}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        }
     </script>
 </body>
 </html>
